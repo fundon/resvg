@@ -4,6 +4,8 @@
 pub mod filter;
 mod geom;
 mod text;
+#[cfg(feature = "text-layout")]
+mod text_layout;
 
 use std::fmt::Display;
 use std::sync::Arc;
@@ -1599,7 +1601,7 @@ pub struct Tree {
     pub(crate) clip_paths: Vec<Arc<ClipPath>>,
     pub(crate) masks: Vec<Arc<Mask>>,
     pub(crate) filters: Vec<Arc<filter::Filter>>,
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub(crate) fontdb: Arc<fontdb::Database>,
 }
 
@@ -1680,7 +1682,7 @@ impl Tree {
     }
 
     /// Returns the font database that applies to all text nodes in the tree.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub fn fontdb(&self) -> &Arc<fontdb::Database> {
         &self.fontdb
     }

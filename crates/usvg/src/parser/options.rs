@@ -1,10 +1,10 @@
 // Copyright 2018 the Resvg Authors
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-#[cfg(feature = "text")]
+#[cfg(feature = "text-layout")]
 use std::sync::Arc;
 
-#[cfg(feature = "text")]
+#[cfg(feature = "text-layout")]
 use crate::FontResolver;
 use crate::{ImageHrefResolver, ImageRendering, ShapeRendering, Size, TextRendering};
 
@@ -82,7 +82,7 @@ pub struct Options<'a> {
     pub image_href_resolver: ImageHrefResolver<'a>,
 
     /// Specifies how fonts should be resolved and loaded.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub font_resolver: FontResolver<'a>,
 
     /// A database of fonts usable by text.
@@ -93,7 +93,7 @@ pub struct Options<'a> {
     /// in a `Tree` becomes available as [`Tree::fontdb`](crate::Tree::fontdb)
     /// after parsing. If no fonts were loaded dynamically, that database will
     /// be the same as this one.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub fontdb: Arc<fontdb::Database>,
     /// A CSS stylesheet that should be injected into the SVG. Can be used to overwrite
     /// certain attributes.
@@ -114,9 +114,9 @@ impl Default for Options<'_> {
             image_rendering: ImageRendering::default(),
             default_size: Size::from_wh(100.0, 100.0).unwrap(),
             image_href_resolver: ImageHrefResolver::default(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             font_resolver: FontResolver::default(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             fontdb: Arc::new(fontdb::Database::new()),
             style_sheet: None,
         }
@@ -137,7 +137,7 @@ impl Options<'_> {
     /// Mutably acquires the database.
     ///
     /// This clones the database if it is currently shared.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub fn fontdb_mut(&mut self) -> &mut fontdb::Database {
         Arc::make_mut(&mut self.fontdb)
     }

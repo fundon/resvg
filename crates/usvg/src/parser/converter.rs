@@ -6,23 +6,19 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 use std::sync::Arc;
 
-#[cfg(feature = "text")]
+#[cfg(feature = "text-layout")]
 use crate::{FontVariation, GlyphId};
-#[cfg(feature = "text")]
-use fontdb::Database;
-#[cfg(feature = "text")]
-use fontdb::ID;
+#[cfg(feature = "text-layout")]
+use fontdb::{Database, ID};
 use svgtypes::{Length, LengthUnit as Unit, PaintOrderKind, TransformOrigin};
 use tiny_skia_path::PathBuilder;
 
 use super::svgtree::{self, AId, EId, FromValue, SvgNode};
 use super::units::{self, convert_length};
 use super::{Error, Options, marker};
-#[cfg(feature = "text")]
-use crate::flatten::BitmapImage;
+#[cfg(feature = "text-layout")]
+use crate::flatten::{BitmapImage, DatabaseExt as _};
 use crate::parser::paint_server::process_paint;
-#[cfg(feature = "text")]
-use crate::text::flatten::DatabaseExt;
 use crate::*;
 
 #[derive(Clone)]
@@ -46,18 +42,18 @@ pub struct State<'a> {
 pub struct Cache {
     /// This fontdb is initialized from [`Options::fontdb`] and then populated
     /// over the course of conversion.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub fontdb: Arc<Database>,
 
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     cache_outline: HashMap<(ID, GlyphId, Vec<FontVariation>), Option<tiny_skia_path::Path>>,
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     cache_colr: HashMap<(ID, GlyphId, Vec<FontVariation>), Option<Tree>>,
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     cache_svg: HashMap<(ID, GlyphId), Option<Node>>,
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     cache_raster: HashMap<(ID, GlyphId), Option<BitmapImage>>,
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     cache_has_opsz: HashMap<ID, bool>,
 
     pub clip_paths: HashMap<String, Arc<ClipPath>>,
@@ -78,7 +74,7 @@ pub struct Cache {
 
 macro_rules! font_lookup {
     ($method_name:ident, $cache_map:ident, $font_variant:ident, $return_type:ty) => {
-        #[cfg(feature = "text")]
+        #[cfg(feature = "text-layout")]
         pub(crate) fn $method_name(&mut self, font: ID, glyph: GlyphId) -> Option<$return_type> {
             let key = (font, glyph);
             match self.$cache_map.get(&key) {
@@ -94,20 +90,20 @@ macro_rules! font_lookup {
 }
 
 impl Cache {
-    pub(crate) fn new(#[cfg(feature = "text")] fontdb: Arc<Database>) -> Self {
+    pub(crate) fn new(#[cfg(feature = "text-layout")] fontdb: Arc<Database>) -> Self {
         Self {
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             fontdb,
 
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             cache_outline: HashMap::new(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             cache_colr: HashMap::new(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             cache_svg: HashMap::new(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             cache_raster: HashMap::new(),
-            #[cfg(feature = "text")]
+            #[cfg(feature = "text-layout")]
             cache_has_opsz: HashMap::new(),
 
             clip_paths: HashMap::new(),
@@ -207,7 +203,7 @@ impl Cache {
     font_lookup!(fontdb_svg, cache_svg, svg, Node);
     font_lookup!(fontdb_raster, cache_raster, raster, BitmapImage);
 
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub(crate) fn fontdb_outline(
         &mut self,
         font: ID,
@@ -225,7 +221,7 @@ impl Cache {
         }
     }
 
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub(crate) fn fontdb_colr(
         &mut self,
         font: ID,
@@ -243,7 +239,7 @@ impl Cache {
         }
     }
 
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     pub(crate) fn has_opsz_axis(&mut self, font: ID) -> bool {
         if let Some(&cached) = self.cache_has_opsz.get(&font) {
             return cached;
@@ -407,7 +403,7 @@ pub(crate) fn convert_doc(svg_doc: &svgtree::Document, opt: &Options) -> Result<
         clip_paths: Vec::new(),
         masks: Vec::new(),
         filters: Vec::new(),
-        #[cfg(feature = "text")]
+        #[cfg(feature = "text-layout")]
         fontdb: opt.fontdb.clone(),
     };
 
@@ -426,7 +422,7 @@ pub(crate) fn convert_doc(svg_doc: &svgtree::Document, opt: &Options) -> Result<
     };
 
     let mut cache = Cache::new(
-        #[cfg(feature = "text")]
+        #[cfg(feature = "text-layout")]
         opt.fontdb.clone(),
     );
 
@@ -489,7 +485,7 @@ pub(crate) fn convert_doc(svg_doc: &svgtree::Document, opt: &Options) -> Result<
 
     // The fontdb might have been mutated and we want to apply these changes to
     // the tree's fontdb.
-    #[cfg(feature = "text")]
+    #[cfg(feature = "text-layout")]
     {
         tree.fontdb = cache.fontdb;
     }
