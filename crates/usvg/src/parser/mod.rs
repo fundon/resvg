@@ -13,12 +13,11 @@ mod shapes;
 mod style;
 mod svgtree;
 mod switch;
+mod text;
 mod units;
 mod use_node;
 
 #[cfg(feature = "text")]
-mod text;
-#[cfg(feature = "text-layout")]
 pub(crate) use converter::Cache;
 pub use image::{ImageHrefDataResolverFn, ImageHrefResolver, ImageHrefStringResolverFn};
 pub use options::Options;
@@ -139,10 +138,10 @@ impl crate::Tree {
             },
             // In the referenced SVG, we start with the unmodified user-provided
             // fontdb, not the one from the cache.
-            #[cfg(feature = "text-layout")]
+            #[cfg(feature = "text")]
             fontdb: opt.fontdb.clone(),
             // Can't clone the resolver, so we create a new one that forwards to it.
-            #[cfg(feature = "text-layout")]
+            #[cfg(feature = "text")]
             font_resolver: crate::FontResolver {
                 select_font: Box::new(|font, db| (opt.font_resolver.select_font)(font, db)),
                 select_fallback: Box::new(|c, used_fonts, db| {

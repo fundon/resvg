@@ -17,14 +17,12 @@ log = "0.4"
 resvg = { path = "../resvg", default-features = false }
 
 [features]
-default = ["svgz", "text", "text-layout", "system-fonts", "memmap-fonts", "raster-images"]
+default = ["svgz", "text", "system-fonts", "memmap-fonts", "raster-images"]
 # Enables SVGZ decoding
 svgz = ["resvg/svgz"]
-# Enables raw SVG text parsing support.
-text = ["resvg/text"]
 # Enables SVG text shaping and layout support.
 # adds around 500KiB to your binary
-text-layout = ["resvg/text-layout"]
+text = ["resvg/text"]
 # enables system fonts loading (only for `text`)
 system-fonts = ["resvg/system-fonts"]
 # enables font files memmaping for faster loading (only for `text`)

@@ -695,7 +695,7 @@ fn node_to_user_coordinates(
             }
 
             // 2.
-            #[cfg(feature = "text-layout")]
+            #[cfg(feature = "text")]
             for span in &mut text.layouted {
                 process_fill(
                     &mut span.fill,
